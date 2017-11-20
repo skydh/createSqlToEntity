@@ -15,8 +15,8 @@ import java.io.IOException;
  */
 public class SqlToEntity {
 
-	public static String fileName = "/text.txt";
-	public static String path = "/bin/sqltoentity/baseentity/";
+	public static String fileName = "/text.txt";// 当前sql位置
+	public static String path = "/src/sqltoentity/baseentity/";// 当前代码位置
 
 	@SuppressWarnings("resource")
 	public static void main(String arg[]) {
@@ -26,6 +26,7 @@ public class SqlToEntity {
 		try {
 
 			File file = new File(System.getProperty("user.dir") + path + fileName);
+
 			BufferedReader br = new BufferedReader(new FileReader(file));
 			while ((s = br.readLine()) != null) {
 				sb.append(s);
@@ -77,12 +78,16 @@ public class SqlToEntity {
 				tempString.append("    private ");
 				tempString.append(getType(temp[4]));
 				tempString.append(" " + changeString(temp[3]) + ";");
-			} else if (i != fieldName.length - 1) {
+			} else if (getType(temp[2]) != null) {
 				tempString.append(getNotes(temp));
 				tempString.append("    @Column(name =\"");
+
 				tempString.append(temp[1] + "\")" + "\r\n");
+
 				tempString.append("    private ");
+
 				tempString.append(getType(temp[2] + " "));
+
 				tempString.append(" " + changeString(temp[1]) + ";");
 			}
 			fieldList.append(tempString.toString() + "\r\n\r\n");
@@ -104,7 +109,7 @@ public class SqlToEntity {
 		for (int j = 0; j < temp.length; j++) {
 			if (temp[j].equals("comment")) {
 				tempString.append("    /**" + "\r\n");
-				tempString.append("    *" + temp[j + 1].replaceAll("'", " ") + "\r\n");
+				tempString.append("    *" + temp[j + 1].replaceAll("'", "").replaceAll("\\);", "") + "\r\n");
 				tempString.append("    */" + "\r\n");
 				break;
 			}
@@ -182,7 +187,7 @@ public class SqlToEntity {
 		else if (temp.startsWith("decimal"))
 			return "BigDecimal";
 		else
-			return "";
+			return null;
 
 	}
 
